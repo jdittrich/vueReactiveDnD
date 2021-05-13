@@ -1,4 +1,6 @@
-import {inject,  ref, reactive, onMounted, computed} from './vue/vue.js';
+import {inject,  ref, computed} from './vue/vue.js';
+
+
 
 const draggable = {
     name:"drag-draggable",
@@ -18,14 +20,12 @@ const draggable = {
         const mousedown = function(e){
             setSelection({
                 "id":props.id,
-                "domRef":domDraggable.value
+                "domRef":domDraggable
             });
         };
 
         // provide the transform properties
-        
         const styleTransform = computed(function(){
-
             return {
                 "transform":"translate("+diffToDownPoint.value.x+"px,"+ diffToDownPoint.value.y +"px)"
             }

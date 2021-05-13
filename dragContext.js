@@ -1,96 +1,94 @@
-import {provide, ref, reactive, computed} from './vue/vue.js';
+import {provide, computed, toRaw, readonly } from './vue/vue.js';
+import {useDragDiffProvider} from './useDragDiffProvider.js';
+import {useSelectionProvider} from './useSelectionProvider.js';
+import {useDroppableProvider} from './useDroppableProvider.js';
+import {findDropTarget} from './collisionHelpers.js';
+
 
 const dragContext = {
-    name:"dragContext",
-    props:{
-        onDragend:Function
+    name: "dragContext",
+    props: {
+        onDragend: Function
     },
-    setup: function(props, context){
-        // SELECTION HANDLING
+    setup: function (props, context){
 
-        // a selection is  {id:<string>, domRef:<DOMElement>}
-        const selectedElements = reactive([]); //array of selections
-        const setSelection = newSelection => selectedElements[0] = newSelection; //but for now we only have one selection
-        provide('setSelection',setSelection);
+        // SELECTION PROVISION
+        let {
+            setSelection,
+            selectedElements
+        } = useSelectionProvider();
 
-        const domRect = computed(function(){
-            if(selectedElements[0]){
+        provide('setSelection', setSelection);
+        provide('selectedElements', selectedElements);
+
+        //DROPPABLE PROVISION
+        let {
+            addDroppableElement,
+            removeDroppableElement,
+            droppableElements
+        } = useDroppableProvider();
+
+        provide('addDroppableElement',addDroppableElement);
+        provide('removeDroppableElement',removeDroppableElement);
+
+        //DRAG DIFF PROVISION
+        let {
+            diffToDownPoint,
+            isDragging,
+            diffHandlerDown,
+            diffHandlerMove,
+            diffHandlerUp
+        } = useDragDiffProvider(props, context);
+
+        provide('isDragging', isDragging)
+        provide("diffToDownPoint", diffToDownPoint);
+
+
+        // DOM RECT (will be interesting as soon as we want to show selection)
+        const domRect = computed(function () {
+            if (selectedElements[0]) {
                 return selectedElements[0].domRef.getBoundingClientRect();
             } else {
                 return null;
             }
         });
         
+        // CALL PROPed EVENT HANDLERS
 
-        // MOUSE EVENT HANDLING
-        
-        const isDragging = ref(false);
-        provide('isDragging',isDragging)
-
-        // Where the last mousedown was
-        let downPoint = {
-            x: null, 
-            y: null
-        };
-
-        // Differences to last mousedown
-        let diffToDownPoint = ref({ //ref so one can just replace .value
-            x: null,
-            y: null
-        });
-
-        provide("diffToDownPoint",diffToDownPoint);
-
-        let mousedown =  function(event){
-            isDragging.value = true;
-
-            downPoint.x = event.clientX;
-            downPoint.y = event.clientY;
-        };
-
-        const pointDifference = function(point1, point2){
-            return {
-                x:point2.x - point1.x,
-                y:point2.y - point1.y
-            };
-        };
-
-
-        let mousemove = function(event){
-            if(isDragging.value === true){
-                diffToDownPoint.value = pointDifference(
-                    downPoint,
-                    {
-                        x:event.clientX,
-                        y:event.clientY
-                    }
-                );
+        //calls onDragend function passed in via Prop, 
+        //so the component itself is agnostic towards it. 
+        const callDragEndHandler = function(event){   
+            if (isDragging.value == true && props.onDragend) {
+                let dropTarget = findDropTarget(readonly(selectedElements[0]),readonly(droppableElements))
+                props.onDragend(event, selectedElements, dropTarget);
             }
         };
 
-        let mouseup = function(event){
-            if(isDragging.value == true && props.onDragend){
-                props.onDragend(event,selectedElements);
-            }
-            isDragging.value = false;
-        };
 
+
+        // PASS TO TEMPLATE
         return {
-            mouseup,
-            mousedown,
-            mousemove,
+            diffHandlerDown,
+            diffHandlerMove,
+            diffHandlerUp,
+            callDragEndHandler,
             domRect,
             diffToDownPoint
-        }
+        };
     },
-    template:`
-    <div v-on:mousedown="mousedown" v-on:mouseup="mouseup" v-on:mousemove="mousemove">
+    template: `
+    <div 
+        v-on:mousedown="diffHandlerDown" 
+        v-on:mousemove="diffHandlerMove"
+        v-on:mouseup="callDragEndHandler($event),diffHandlerUp($event) "
+    >
         <slot></slot>
+        
         <span v-if=domRect>x: {{domRect.x}}, y: {{domRect.y}}, w: {{domRect.width}}  h:{{domRect.height}}</span><br>
         <span v-if=diffToDownPoint.x> x: {{diffToDownPoint.x}}, y: {{diffToDownPoint.y}} </span>
-
+    
     </div>
     `
 }
 
-export {dragContext}
+export { dragContext }
