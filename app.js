@@ -14,8 +14,8 @@ let App = {
         'drag-droppable':droppable
     },
     setup(props,context){
-        const onDragend = function(event, selection, dropTarget){
-            console.log(event,selection,dropTarget)
+        const onDragend = function(event, selection, dropTargetId){
+            console.log(event,selection,dropTargetId)
 
         };
 
@@ -26,8 +26,12 @@ let App = {
             <drag-draggable id="oneDrag" style="width:100px; height:80px; outline:green 1px solid">
                 <simple-rect>test</simple-rect>
             </drag-draggable>
+            <drag-draggable id="twoDrag" style="width:100px; height:80px; outline:green 1px solid">
+                <simple-rect>test</simple-rect>
+            </drag-draggable>
 
-            <drag-droppable id="twoDrop" style="width:10em; height:10em; outline:blue 1px solid">DROP ME</drag-droppable>
+            <drag-droppable id="threeDrop" style="width:10em; height:10em; outline:blue 1px solid">DROP ME</drag-droppable>
+            <drag-droppable id="fourDrop" style="width:10em; height:10em; outline:#AABB11 1px solid">DROP ME, too</drag-droppable>
             
             <drag-overlay>
                 <simple-rect>overlay yey</simple-rect>

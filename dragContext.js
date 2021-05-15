@@ -1,7 +1,8 @@
-import {provide, computed, toRaw, readonly } from './vue/vue.js';
+import {provide, computed, reactive, unref, watch} from './vue/vue.js';
 import {useDragDiffProvider} from './useDragDiffProvider.js';
-import {useSelectionProvider} from './useSelectionProvider.js';
-import {useDroppableProvider} from './useDroppableProvider.js';
+import {useSingleSelectionProvider} from './useSelectionProvider.js';
+//import {useElementListStore} from './useElementListStore.js'
+//import {useDroppableProvider} from './useDroppableProvider.js';
 import {findDropTarget} from './collisionHelpers.js';
 
 
@@ -11,25 +12,32 @@ const dragContext = {
         onDragend: Function
     },
     setup: function (props, context){
-
         // SELECTION PROVISION
         let {
-            setSelection,
-            selectedElements
-        } = useSelectionProvider();
+            selectedElement,
+            clearSelection,
+            setSelectedElement
+        } = useSingleSelectionProvider();
 
-        provide('setSelection', setSelection);
-        provide('selectedElements', selectedElements);
+        provide('setSelection', setSelectedElement);
+        provide('selectedElement', selectedElement);
 
         //DROPPABLE PROVISION
-        let {
-            addDroppableElement,
-            removeDroppableElement,
-            droppableElements
-        } = useDroppableProvider();
+        const droppableList = reactive(new Map());
+        const addDroppableElement = (id,domElement) => droppableList.set(unref(id),unref(domElement));
+        const removeDroppableElement = (id) => droppableList.delete(unref(id));
 
-        provide('addDroppableElement',addDroppableElement);
-        provide('removeDroppableElement',removeDroppableElement);
+        provide('addDroppableElement', addDroppableElement);
+        provide('removeDroppableElement', removeDroppableElement);
+
+        //DRAGGABLE PROVISION
+        const draggableList = reactive(new Map());
+        const addDraggableElement = (id,domElement) => draggableList.set(unref(id),unref(domElement));
+        const removeDraggableElement = (id) => draggableList.delete(unref(id));
+
+        provide('addDraggableElement', addDraggableElement);
+        provide('removeDraggableElement', removeDraggableElement);
+
 
         //DRAG DIFF PROVISION
         let {
@@ -40,27 +48,32 @@ const dragContext = {
             diffHandlerUp
         } = useDragDiffProvider(props, context);
 
-        provide('isDragging', isDragging)
-        provide("diffToDownPoint", diffToDownPoint);
+        provide('isDragging', isDragging);
+        provide('diffToDownPoint', diffToDownPoint);
 
 
         // DOM RECT (will be interesting as soon as we want to show selection)
         const domRect = computed(function () {
-            if (selectedElements[0]) {
-                return selectedElements[0].domRef.getBoundingClientRect();
+            if (selectedElement.value) {
+                return draggableList.get(selectedElement.value).getBoundingClientRect();
             } else {
                 return null;
             }
         });
         
+        //debug 
+        watch(selectedElement,(now, prev)=>console.log("selectedChange. Now:", now, " prev:",prev));
+        watch(isDragging,(now, prev)=>console.log("isDragging. Now:", now, " prev:",prev));
+
         // CALL PROPed EVENT HANDLERS
 
         //calls onDragend function passed in via Prop, 
         //so the component itself is agnostic towards it. 
         const callDragEndHandler = function(event){   
+            console.log(unref(selectedElement));
             if (isDragging.value == true && props.onDragend) {
-                let dropTarget = findDropTarget(readonly(selectedElements[0]),readonly(droppableElements))
-                props.onDragend(event, selectedElements, dropTarget);
+                let dropTargetId = findDropTarget(draggableList,droppableList, selectedElement);
+                props.onDragend(event, selectedElement, dropTargetId);
             }
         };
 
