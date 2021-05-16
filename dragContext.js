@@ -102,9 +102,7 @@ const dragContext = {
     >
         <slot></slot>
         
-        <span v-if=domRect>x: {{domRect.x}}, y: {{domRect.y}}, w: {{domRect.width}}  h:{{domRect.height}}</span><br>
         <span v-if=diffToDownPoint.x> x: {{diffToDownPoint.x}}, y: {{diffToDownPoint.y}} </span>
-    
     </div>
     `
 }
