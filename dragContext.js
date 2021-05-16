@@ -61,16 +61,13 @@ const dragContext = {
             }
         });
         
-        //debug 
-        watch(selectedElement,(now, prev)=>console.log("selectedChange. Now:", now, " prev:",prev));
-        watch(isDragging,(now, prev)=>console.log("isDragging. Now:", now, " prev:",prev));
+     
 
         // CALL PROPed EVENT HANDLERS
 
         //calls onDragend function passed in via Prop, 
         //so the component itself is agnostic towards it. 
         const callDragEndHandler = function(event){   
-            console.log(unref(selectedElement));
             if (isDragging.value == true && props.onDragend) {
                 let dropTargetId = findDropTarget(draggableList,droppableList, selectedElement);
                 props.onDragend(event, selectedElement, dropTargetId);
