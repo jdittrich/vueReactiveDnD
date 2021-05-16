@@ -1,5 +1,5 @@
 import {ref} from './vue/vue.js';
-import {makeDraggable} from './makeDraggable.js';makeDraggable
+import {makeDraggable} from './makeDraggable.js';
 
 const draggable = {
     name:"drag-draggable",
@@ -7,7 +7,7 @@ const draggable = {
         id:String
     },
     setup: function(props, context){
-        const domDraggable = ref(null);
+        const domDraggable = ref(null); //needed so that it can be set in the template
         
         const{
             isDragging,

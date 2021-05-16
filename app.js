@@ -1,9 +1,9 @@
-import {createApp, ref, computed} from './vue/vue.js';
-import {draggable} from './draggable.js';
-import {dragContext} from './dragContext.js';
-import {simpleRect} from './simpleRect.js';
+import {createApp, ref, computed} from './vue/vue.js'; //vue, duh. 
+import {draggable} from './draggable.js'; //sets the selected element, gets coordinates for dragging from dragContext
+import {dragContext} from './dragContext.js'; //this is where most of the work is done
+import {simpleRect} from './simpleRect.js'; //just template rendering, no function
 //import {dragOverlay} from './dragOverlay.js';
-import {droppable} from './droppable.js';
+import {droppable} from './droppable.js'; //registers itself as drop target
 
 let App = {
     components:{
@@ -16,7 +16,6 @@ let App = {
     setup(props,context){
         const onDragend = function(event, selection, dropTargetId){
             console.log("you dropped the element on the drop target with the ID:", dropTargetId)
-
         };
 
         return {onDragend};
@@ -34,8 +33,6 @@ let App = {
             <drag-droppable id="threeDrop" style="width:10em; height:10em; outline:blue 1px solid">DROP ME (I'm "threeDrop")</drag-droppable>
             
             <drag-droppable id="fourDrop" style="width:10em; height:10em; outline:#AABB11 1px solid">DROP ME, too (I'm "fourDrop")</drag-droppable>
-            
-
         </drag-context>
     `
 }
