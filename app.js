@@ -9,16 +9,18 @@ let App = {
     components:{
         'drag-draggable':draggable,
         'drag-context':dragContext,
-       // 'drag-overlay':dragOverlay,
+        // 'drag-overlay':dragOverlay,
         'simple-rect':simpleRect,
         'drag-droppable':droppable
     },
     setup(props,context){
+        let logMessage = ref("log message here");
         const onDragend = function(event, selection, dropTargetId){
-            console.log("you dropped the element on the drop target with the ID:", dropTargetId)
+            logMessage.value = "you dropped the element on the drop target with the ID: "+dropTargetId;
+            console.log(logMessage.value);
         };
 
-        return {onDragend};
+        return {onDragend,logMessage};
     },
     template:`
         <drag-context :onDragend="onDragend">
@@ -34,6 +36,7 @@ let App = {
             
             <drag-droppable id="fourDrop" style="width:10em; height:10em; outline:#AABB11 1px solid">DROP ME, too (I'm "fourDrop")</drag-droppable>
         </drag-context>
+        <div>{{logMessage}}</div>
     `
 }
 
