@@ -1,7 +1,8 @@
 import { inject, computed, onMounted, onUnmounted } from './vue/vue.js';
 
 function makeDraggable(id, domDraggable){
-    // register as draggable 
+    
+    //register and unregister to dragContext
     const addDraggableElement = inject("addDraggableElement");
     const removeDraggableElement = inject("removeDraggableElement");
 
@@ -13,8 +14,9 @@ function makeDraggable(id, domDraggable){
         removeDraggableElement(id);
     });
 
-    const isDragging = inject("isDragging");
 
+    const isDragging = inject("isDragging");
+    
     // allow setting selection for this element
     const setSelection = inject("setSelection");
     const selection = inject("selectedElement");
@@ -24,14 +26,13 @@ function makeDraggable(id, domDraggable){
     };
     
     
-    
     // provide the transform properties
     
     const diffToDownPoint = inject("diffToDownPoint");
     
     const styleTransform = computed(function(){
-        let transformValue = "translate("+0+"px,"+ 0 +"px)";
-        if(selection.value === id){ //if this element is selected
+        let transformValue = "translate("+0+"px,"+ 0 +"px)"; //do not move element, except...
+        if(selection.value === id){ //...if this element is selected
             transformValue = "translate("+diffToDownPoint.value.x+"px,"+ diffToDownPoint.value.y +"px)";
         }
         return {
