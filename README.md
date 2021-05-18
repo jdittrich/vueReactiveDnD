@@ -2,7 +2,11 @@
 
 Experiment to create a drag and drop mechanism similar to [DnD-kit](https://github.com/clauderic/dnd-kit/) (DnD-kit is for react, though)
 
-Structure: 
+**Try it**
+
+Just clone the repo and run a http server (e.g. python’s `python -m http.server 8080`) in the folder. There is no webpack, npm etc. needed. 
+
+**Structure:**
 
 * _app.js_: sets up components in template, passes ids as props, sets onDragEnd function (which gives you the debug message at the botton of the screen and on console)
 * _draggable.js_:
