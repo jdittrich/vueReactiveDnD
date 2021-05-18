@@ -1,7 +1,7 @@
 import {provide, computed, reactive, unref, watch} from './vue/vue.js';
 import {useDragDiffProvider} from './useDragDiffProvider.js';
 import {useSingleSelectionProvider} from './useSelectionProvider.js';
-//import {useElementListStore} from './useElementListStore.js'
+import {useElementListStore} from './useElementListStore.js'
 //import {useDroppableProvider} from './useDroppableProvider.js';
 import {findDropTarget} from './collisionHelpers.js';
 
@@ -25,24 +25,25 @@ const dragContext = {
         provide('setSelection', setSelectedElement);
         provide('selectedElement', selectedElement);
 
+
         //==DROPPABLE PROVISION==
         // create a reactive map of droppable DOM Elements, accessible by their IDs
-        const droppableList = reactive(new Map());
-        
-        //getter and setter functions which are…
-        const addDroppableElement = (id,domElement) => droppableList.set(unref(id),unref(domElement));
-        const removeDroppableElement = (id) => droppableList.delete(unref(id));
-        //(Note: I dislike the un-ref-ing.)
+        const {
+            elementList: droppableList,
+            addElement: addDroppableElement,
+            removeElement: removeDroppableElement
+        } = useElementListStore();
         
         //…passed to all descendants which inject them
         provide('addDroppableElement', addDroppableElement);
         provide('removeDroppableElement', removeDroppableElement);
 
         //==DRAGGABLE PROVISION==
-        // same as above!
-        const draggableList = reactive(new Map());
-        const addDraggableElement = (id,domElement) => draggableList.set(unref(id),unref(domElement));
-        const removeDraggableElement = (id) => draggableList.delete(unref(id));
+        const {
+            elementList: draggableList,
+            addElement: addDraggableElement,
+            removeElement: removeDraggableElement
+        } = useElementListStore();
 
         provide('addDraggableElement', addDraggableElement);
         provide('removeDraggableElement', removeDraggableElement);
