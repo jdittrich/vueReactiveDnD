@@ -19,22 +19,21 @@ const dragContext = {
             setSelectedElement
         } = useSingleSelectionProvider();
 
-        //these are needed by droppables to set themselves as selected. 
-        // (when the drag begins, selected elements are moved. )
-        //(currenty, only one element can be selected and thus dragged)
+        // These are needed by draggables to set themselves as selected. 
+        // (when the drag begins, the selected element is moved. )
         provide('setSelection', setSelectedElement);
         provide('selectedElement', selectedElement);
 
+        
 
         //==DROPPABLE PROVISION==
-        // create a reactive map of droppable DOM Elements, accessible by their IDs
         const {
             elementList: droppableList,
             addElement: addDroppableElement,
             removeElement: removeDroppableElement
         } = useElementListStore();
         
-        //…passed to all descendants which inject them
+        //for the droppables to register themselves. 
         provide('addDroppableElement', addDroppableElement);
         provide('removeDroppableElement', removeDroppableElement);
 
