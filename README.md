@@ -23,4 +23,4 @@ Just clone the repo and run a http server (e.g. python’s `python -m http.serve
    * provides isDragging boolean and the difference between mousedown (dragstart) and current mouse position (as long as the drag is ongoing) 
    * calls the DragEnd event handler (if provided via prop in the app.js) 
 
-The rest are functions imported in the components – makeDraggable and makeDroppable provide most of the non-template/event related setup for their respective components, collisionHelpers find the element the currently selected element was dropped on. It currently only uses the "whereIsRectContained" strategy.
+The rest are functions imported in the components – makeDraggable and makeDroppable provide most of the non-template/event related setup for their respective components, collisionHelpers find the element the currently selected element was dropped on. It currently only uses the "whereIsRectContained" strategy. dragUtils has compute functions to be used in dragContext.js’s setup to provide some helpful reactive data about the drag. 

@@ -67,11 +67,13 @@ const dragContext = {
 
         const isOver = computeOverDroppableIds(draggableList,droppableList,selectedElement);  
         
+        // this is the main object with the interesting infos for working with the drag
+        // 
         const dragData = reactive({
-            dragRect:dragRect,
-            isOver:isOver,
-            lastEvent: lastEvent,
-            isDragging: isDragging
+            isDragging: isDragging //are we dragging?
+            dragRect:dragRect, //the bounding rect of the dragged object
+            isOver:isOver, //droppable elements the draggable element is over
+            lastEvent: lastEvent, //last event that happend (probably best to be used with watch())
         });
         
         provide ('dragData', dragData);
