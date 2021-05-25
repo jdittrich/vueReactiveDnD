@@ -18,50 +18,30 @@ const findDropTarget = function(draggableElements,droppableElements, draggedId){
 
 
 const whereIsRectColliding = function(collisionPatients,collisionAgent){
-    let collisions = [];
-
-    collisionPatients.forEach(patient => {
-        if(isRectCollidingWithRect(
+    return collisionPatients.filter(patient =>
+        isRectCollidingWithRect(
             patient.domRef.getBoundingClientRect(),
             collisionAgent.domRef.getBoundingClientRect
-        )){
-            collisions.push(patient);
-        }
-    });
-
-    return collisions;
+        )
+    );
 };
 
 const whereIsRectContained = function(droppables,draggedDom){
-    let containment = [];
-
-    droppables.forEach((droppable,id) => {
-        const isInside = isInnerRectInOuterRect(
+    return droppables.entries.findIndex(droppable =>
+        isInnerRectInOuterRect(
             draggedDom.getBoundingClientRect(),
             droppable.getBoundingClientRect()
-        );
-        if(isInside){
-            containment.push(id);
-        }
-    });
-
-    return containment[0];
+        )
+    );
 };
 
 const whereIsPointContained = function(containers, point){
-    let containment = [];
-
-    containers.forEach(container => {
-        if(
-            isPointInRect(
-                point,
-                container.domRef.getBoundingClientRect()
-        )){
-            containment.push(container);
-        }
-    });
-
-    return containment;
+    return containers.filter(container =>
+        isPointInRect(
+            point,
+            container.domRef.getBoundingClientRect()
+        )
+    );
 };
 
 
