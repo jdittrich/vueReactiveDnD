@@ -36,10 +36,11 @@ const whereIsRectContained = function(droppables,draggedDom){
     let containment = [];
 
     droppables.forEach((droppable,id) => {
-        if(isInnerRectInOuterRect(
-                draggedDom.getBoundingClientRect(),
-                droppable.getBoundingClientRect()
-        )){
+        const isInside = isInnerRectInOuterRect(
+            draggedDom.getBoundingClientRect(),
+            droppable.getBoundingClientRect()
+        );
+        if(isInside){
             containment.push(id);
         }
     });

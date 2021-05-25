@@ -4,7 +4,7 @@ import {useSingleSelectionProvider} from './useSelectionProvider.js';
 import {useElementListStore} from './useElementListStore.js'
 //import {useDroppableProvider} from './useDroppableProvider.js';
 import {findDropTarget} from './collisionHelpers.js';
-
+import {computeDragRect, computeSelectionEnclosingRect, computeOverDroppableIds} from './dragUtils.js'
 
 const dragContext = {
     name: "dragContext",
@@ -24,7 +24,7 @@ const dragContext = {
         provide('setSelection', setSelectedElement);
         provide('selectedElement', selectedElement);
 
-        
+
 
         //==DROPPABLE PROVISION==
         const {
@@ -50,6 +50,7 @@ const dragContext = {
 
         //DRAG DIFF PROVISION
         let {
+            lastEvent,
             diffToDownPoint,
             isDragging,
             diffHandlerDown,
@@ -60,20 +61,22 @@ const dragContext = {
         provide('isDragging', isDragging);
         provide('diffToDownPoint', diffToDownPoint);
 
-        /*
-        // DOM RECT (will be interesting as soon as we want to show selection)
-        const domRect = computed(function () {
-            if (selectedElement.value) {
-                return draggableList.get(selectedElement.value).getBoundingClientRect();
-            } else {
-                return null;
-            }
-        });*/
+        const selectionRect = computeSelectionEnclosingRect(selectedElement,draggableList);
+
+        const dragRect = computeDragRect(diffToDownPoint,selectionRect);
+
+        const isOver = computeOverDroppableIds(draggableList,droppableList,selectedElement);  
         
-     
+        const dragData = reactive({
+            dragRect:dragRect,
+            isOver:isOver,
+            lastEvent: lastEvent,
+            isDragging: isDragging
+        });
+        
+        provide ('dragData', dragData);
 
         // CALL PROPed EVENT HANDLERS
-
         //calls onDragend function passed in via Prop (in the demo this is done in app.js), 
         //so the component itself is agnostic towards it. 
         const callDragEndHandler = function(event){   
@@ -91,7 +94,8 @@ const dragContext = {
             diffHandlerMove,
             diffHandlerUp,
             callDragEndHandler,
-            diffToDownPoint
+            diffToDownPoint,
+            dragData
         };
     },
     template: `
@@ -99,10 +103,22 @@ const dragContext = {
         v-on:mousedown="diffHandlerDown" 
         v-on:mousemove="diffHandlerMove"
         v-on:mouseup="callDragEndHandler($event),diffHandlerUp($event) "
-    >
+    >   
+    <div style="
+        top:{{dragData.dragRect.y+'px}};
+        left: {{dragData.dragRect.x+'px'}};
+        width: {{dragData.dragRect.width+'px'}};
+        height:{{dragData.dragRect.height+'px'}};
+        position: absolute;
+        outline: 1px solid blue; 
+    ">…</div>
         <slot></slot>
+        <ul>
+            <li>Is Dragging? {{dragData.isDragging}}</li>
+            <li>is Over? {{Array.from(dragData.isOver).toString()}}</li>
+            <li>Last Event? {{dragData.lastEvent}}</li>
+        </ul>
         
-        <span v-if=diffToDownPoint.x> x: {{diffToDownPoint.x}}, y: {{diffToDownPoint.y}} </span>
     </div>
     `
 }
