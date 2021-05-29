@@ -4,7 +4,7 @@ import {useSingleSelectionProvider} from './useSelectionProvider.js';
 import {useElementListStore} from './useElementListStore.js'
 //import {useDroppableProvider} from './useDroppableProvider.js';
 import {findDropTarget} from './collisionHelpers.js';
-import {computeDragRect, computeSelectionEnclosingRect, computeOverDroppableIds} from './dragUtils.js'
+import {useDragData} from './dragUtils.js'
 
 const dragContext = {
     name: "dragContext",
@@ -12,11 +12,13 @@ const dragContext = {
         onDragend: Function
     },
     setup: function (props, context){
-        // SELECTION PROVISION
+        // ____SELECTION PROVISION____
         let {
             selectedElement,
             clearSelection, //currently, we never clear selection, it is just the element you clicked on last. 
-            setSelectedElement
+            setSelectedElement,
+            addSelectableElement,
+            removeSelectableElement
         } = useSingleSelectionProvider();
 
         // These are needed by draggables to set themselves as selected. 
@@ -24,9 +26,13 @@ const dragContext = {
         provide('setSelection', setSelectedElement);
         provide('selectedElement', selectedElement);
 
+        provide('addSelectableElement', addSelectableElement);
+        provide('removeSelectableElement', removeSelectableElement);
+       
 
 
-        //==DROPPABLE PROVISION==
+
+        //___DROPPABLE PROVISION_____
         const {
             elementList: droppableList,
             addElement: addDroppableElement,
@@ -37,7 +43,7 @@ const dragContext = {
         provide('addDroppableElement', addDroppableElement);
         provide('removeDroppableElement', removeDroppableElement);
 
-        //==DRAGGABLE PROVISION==
+        //____DRAGGABLE PROVISION____
         const {
             elementList: draggableList,
             addElement: addDraggableElement,
@@ -48,7 +54,7 @@ const dragContext = {
         provide('removeDraggableElement', removeDraggableElement);
 
 
-        //DRAG DIFF PROVISION
+        //____DRAG DIFF PROVISION____
         let {
             lastEvent,
             diffToDownPoint,
@@ -61,21 +67,17 @@ const dragContext = {
         provide('isDragging', isDragging);
         provide('diffToDownPoint', diffToDownPoint);
 
-        const selectionRect = computeSelectionEnclosingRect(selectedElement,draggableList);
+        // ___DRAG DATA PROVISION____
 
-        const dragRect = computeDragRect(diffToDownPoint,selectionRect);
-
-        const isOver = computeOverDroppableIds(draggableList,droppableList,selectedElement);  
-        
-        // this is the main object with the interesting infos for working with the drag
-        // 
-        const dragData = reactive({
-            isDragging: isDragging //are we dragging?
-            dragRect:dragRect, //the bounding rect of the dragged object
-            isOver:isOver, //droppable elements the draggable element is over
-            lastEvent: lastEvent, //last event that happend (probably best to be used with watch())
+        const dragData = useDragData({
+            draggableList,
+            droppableList,
+            selectedElement,
+            isDragging,
+            diffToDownPoint
         });
         
+
         provide ('dragData', dragData);
 
         // CALL PROPed EVENT HANDLERS
@@ -114,13 +116,7 @@ const dragContext = {
         position: absolute;
         outline: 1px solid blue; 
     ">…</div>
-        <slot></slot>
-        <ul>
-            <li>Is Dragging? {{dragData.isDragging}}</li>
-            <li>is Over? {{Array.from(dragData.isOver).toString()}}</li>
-            <li>Last Event? {{dragData.lastEvent}}</li>
-        </ul>
-        
+        <slot></slot>        
     </div>
     `
 }
