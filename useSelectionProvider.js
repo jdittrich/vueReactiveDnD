@@ -1,12 +1,23 @@
-import {unref, ref} from './vue/vue.js';
+import {reactive,unref,ref} from './vue/vue.js';
+import {useElementListStore} from './useElementListStore.js';
 
 const useSingleSelectionProvider = function () {
+    const {
+        elementList: selectableList,
+        addElement: addSelectableElement,
+        removeElement: removeSelectableElement
+    } = useElementListStore();
+
     const selectedElement = ref(null);
     
     const setSelectedElement = (id) => {
-        selectedElement.value = unref(id); 
-        //Note: I dislike the un-refing of ids, but otherwise, it seems to get hard to compare them, 
-        //as pure string id, ref-ed id and reactive object id are different things for javascript. 
+        id = unref(id);
+
+        if(selectableList.get(id)){
+           selectedElement.value = id;
+        } else {
+            throw new Error("id is not among the selectable elements");
+        }
     };
 
     const clearSelection = () => selectedElement.value = null;
@@ -14,6 +25,8 @@ const useSingleSelectionProvider = function () {
     return {
         clearSelection,
         setSelectedElement,
+        addSelectableElement,
+        removeSelectableElement,
         selectedElement
     };
 };
