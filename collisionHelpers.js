@@ -1,12 +1,5 @@
-import {unref} from './vue/vue.js'
-/**
- * 
- * @param {Map} draggableElements 
- * @param {Map} droppableElements 
- * @param {*} dragged 
- * @param {*} mode 
- * @returns 
- */
+import {unref} from './vue/vue.js';
+
 const findDropTarget = function(draggableElements,droppableElements, draggedId){
     //if this would be universal, there would be the choice of selected Elements and point
     //point being useful when dragging many elements (then the mouse cursor counts)
@@ -27,20 +20,28 @@ const whereIsRectColliding = function(collisionPatients,collisionAgent){
 };
 
 const whereIsRectContained = function(droppables,draggedDom){
-    return droppables.entries.findIndex(droppable =>
-        isInnerRectInOuterRect(
+    let containment = [];
+
+    droppables.forEach((droppable,id) => {
+        const isInside = isInnerRectInOuterRect(
             draggedDom.getBoundingClientRect(),
             droppable.getBoundingClientRect()
-        )
-    );
+        );
+
+        if(isInside){
+            containment.push(id);
+        }
+    });
+
+    return containment[0];
 };
 
 const whereIsPointContained = function(containers, point){
-    return containers.filter(container =>
+    return containers.filter(container => {
         isPointInRect(
             point,
             container.domRef.getBoundingClientRect()
-        )
+        )}
     );
 };
 
