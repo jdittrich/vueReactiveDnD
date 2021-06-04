@@ -1,49 +1,20 @@
 import {computed} from './vue/vue.js';
-import {findDropTarget} from './collisionHelpers.js';
+import {findDropTarget} from './collisionHelpers.js'
 
-const useDragData = function(paramObject){
-    const {
-        draggableList, 
-        droppableList,
-        selectableList,
-        selectedElement,
-        isDragging,
-        diffToDownPoint
-    } = paramObject;
-
-    
-    const computedDragData = computed(()=>{
-        let dragData = {
-            isOver:null,
-            dragRect:null
-        }; 
-
-        if(isDragging && selectedElement.size > 0){ //is dragging does not mean that an element is dragged, it just concerns the mere mouse movement
-            const selectionEnclosingRect = getSelectionEnclosingRect(selectedElement,selectableElements);
-            const dragRect = getDragRect(diffToDragPoint,selectionEnclosingRect);
-    
-            const isOver = overDroppableIds(draggableList,droppableList,selectedElement);
-    
-            dragData.isOver = isOver;
-            dragData.dragRect = dragRect;
-        }
-    
-        return dragData;
-    });
-
-    return computedDragData;    
-}
-
-const overDroppableIds = function(draggableList,droppableList, selectedElement){
+const computeOverDroppableIds = function(draggableList,droppableList, selectedElement){
+    const isOver = computed(()=>{   
         const elementIdsOverData = new Set(); 
         elementIdsOverData.add(
             findDropTarget(draggableList,droppableList, selectedElement)
         );
         return elementIdsOverData;
+    });
+    
+    return isOver;
 };
 
 //get a rectangle, shifted by the distance of the drag
-const getDragRect = function(dragdiff, selectionRect){
+const computeDragRect = function(dragdiff, selectionRect){
     const dragRect = computed(()=>{
          return {
              x: selectionRect.x + dragdiff.x, 
@@ -56,8 +27,11 @@ const getDragRect = function(dragdiff, selectionRect){
     return dragRect; 
 };
 
+
 //get a rectangle enclosing the selected elements 
-const getSelectionEnclosingRect = function(selectedElementsId,selectableElements){
+const computeSelectionEnclosingRect = function(selectedElementsId,selectableElements){
+
+    const selectionRect = computed(()=>{
         let selectionRectData = {
             x:null, 
             y:null,
@@ -65,6 +39,7 @@ const getSelectionEnclosingRect = function(selectedElementsId,selectableElements
             height: null
         };
 
+    
         selectedElementsId.forEach(id => {
             singleElementBoundingRect = selectableElements.get(id).getBoundingClientRect();
             //take position coordinates that are more top-left
@@ -76,6 +51,9 @@ const getSelectionEnclosingRect = function(selectedElementsId,selectableElements
         });
 
         return selectionRectData;
+    });
+
+    return selectionRect;
 };
 
-export {useDragData};
+export {computeDragRect, computeSelectionEnclosingRect, computeOverDroppableIds};
