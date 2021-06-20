@@ -1,4 +1,4 @@
-import { inject, computed, onMounted, onUnmounted } from './vue/vue.js';
+import { inject, computed, onMounted, onUnmounted } from '../vue/vue.js';
 
 function makeDraggable(id, domDraggable){
     

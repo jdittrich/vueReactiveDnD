@@ -1,4 +1,4 @@
-import {reactive, unref} from './vue/vue.js';
+import {reactive, unref} from '../vue/vue.js';
 
 const useElementListStore = function(){
     const elementList = reactive(new Map());

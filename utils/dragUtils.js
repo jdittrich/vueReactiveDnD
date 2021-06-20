@@ -1,5 +1,5 @@
-import {computed} from './vue/vue.js';
-import {findDropTarget} from './collisionHelpers.js'
+import {computed} from '../vue/vue.js';
+import {findDropTarget} from './collisionUtils.js'
 
 const computeOverDroppableIds = function(draggableList,droppableList, selectedElement){
     const isOver = computed(()=>{   

@@ -1,9 +1,11 @@
-import {createApp, ref, computed} from './vue/vue.js'; //vue, duh. 
-import {draggable} from './draggable.js'; //sets the selected element, gets coordinates for dragging from dragContext
-import {dragContext} from './dragContext.js'; //this is where most of the work is done
-import {simpleRect} from './simpleRect.js'; //just template rendering, no function
-//import {dragOverlay} from './dragOverlay.js';
-import {droppable} from './droppable.js'; //registers itself as drop target
+import {createApp, ref, computed} from '../vue/vue.js'; //vue, duh. 
+
+import {draggable} from '../components/draggable.js'; //sets the selected element, gets coordinates for dragging from dragContext
+import {droppable} from '../components/droppable.js'; //registers itself as drop target
+import {dragContext} from '../components/dragContext.js'; //this is where most of the work is done
+
+import {simpleRect} from '../components/simpleRect.js'; //just template rendering, no function
+
 
 let App = {
     components:{

@@ -1,5 +1,5 @@
-import {ref} from './vue/vue.js';
-import {makeDroppable} from './makeDroppable.js';
+import {ref} from '../vue/vue.js';
+import {makeDroppable} from '../composables/makeDroppable.js';
 
 
 
@@ -17,7 +17,6 @@ const droppable = {
     },
     template:`
         <div ref="domDroppable"><slot></slot></div>`
-
-}
+};
 
 export {droppable};

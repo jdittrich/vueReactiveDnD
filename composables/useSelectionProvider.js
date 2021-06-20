@@ -1,4 +1,4 @@
-import {unref, ref} from './vue/vue.js';
+import {unref, ref} from '../vue/vue.js';
 
 const useSingleSelectionProvider = function () {
     const selectedElement = ref(null);

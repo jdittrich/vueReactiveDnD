@@ -1,10 +1,8 @@
-import {provide, computed, reactive, unref, watch} from './vue/vue.js';
-import {useDragDiffProvider} from './useDragDiffProvider.js';
-import {useSingleSelectionProvider} from './useSelectionProvider.js';
-import {useElementListStore} from './useElementListStore.js'
-//import {useDroppableProvider} from './useDroppableProvider.js';
-import {findDropTarget} from './collisionHelpers.js';
-import {useDragData} from './dragUtils.js'
+import {provide, computed, reactive, unref, watch} from '../vue/vue.js';
+import {useDragDiffProvider} from '../composables/useDragDiffProvider.js';
+import {useSingleSelectionProvider} from '../composables/useSelectionProvider.js';
+import {useElementListStore} from '../composables/useElementListStore.js'
+import {findDropTarget} from '../utils/collisionUtils.js';
 
 const dragContext = {
     name: "dragContext",
@@ -67,19 +65,6 @@ const dragContext = {
         provide('isDragging', isDragging);
         provide('diffToDownPoint', diffToDownPoint);
 
-        // ___DRAG DATA PROVISION____
-
-        const dragData = useDragData({
-            draggableList,
-            droppableList,
-            selectedElement,
-            isDragging,
-            diffToDownPoint
-        });
-        
-
-        provide ('dragData', dragData);
-
         // CALL PROPed EVENT HANDLERS
         //calls onDragend function passed in via Prop (in the demo this is done in app.js), 
         //so the component itself is agnostic towards it. 
@@ -90,6 +75,14 @@ const dragContext = {
             }
         };
 
+        //drag Event data
+        //over which droppable elements is the currently dragged element?
+        //a set of ids
+
+        //which droppable elements could the currently dragged element be dropped on?
+        //a set of ids
+
+        
 
 
         // PASS TO TEMPLATE
@@ -99,7 +92,6 @@ const dragContext = {
             diffHandlerUp,
             callDragEndHandler,
             diffToDownPoint,
-            dragData
         };
     },
     template: `
@@ -109,10 +101,6 @@ const dragContext = {
         v-on:mouseup="callDragEndHandler($event),diffHandlerUp($event) "
     >   
     <div style="
-        top:{{dragData.dragRect.y+'px}};
-        left: {{dragData.dragRect.x+'px'}};
-        width: {{dragData.dragRect.width+'px'}};
-        height:{{dragData.dragRect.height+'px'}};
         position: absolute;
         outline: 1px solid blue; 
     ">…</div>

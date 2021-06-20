@@ -1,5 +1,5 @@
-import {ref} from './vue/vue.js';
-import {makeDraggable} from './makeDraggable.js';
+import {ref} from '../vue/vue.js';
+import {makeDraggable} from '../composables/makeDraggable.js';
 
 const draggable = {
     name:"drag-draggable",

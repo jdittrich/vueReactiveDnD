@@ -1,4 +1,4 @@
-import {ref, reactive} from './vue/vue.js';
+import {ref} from '../vue/vue.js';
 
 const useDragDiffProvider = function (props, context) {
 
@@ -10,7 +10,7 @@ const useDragDiffProvider = function (props, context) {
     };
 
 
-    const diffToDownPoint = reactive({ // Differences to last mousedown; ref so one can just replace .value
+    const diffToDownPoint = ref({ // Differences to last mousedown; ref so one can just replace .value
         x: null,
         y: null
     });
@@ -41,16 +41,13 @@ const useDragDiffProvider = function (props, context) {
 
     const diffHandlerMove = function (event) {
         if (isDragging.value === true) {
-            const {x, y} = utilPointDifference(
+            diffToDownPoint.value = utilPointDifference(
                 downPoint,
                 {
                     x: event.clientX,
                     y: event.clientY
                 }
             );
-            
-            diffToDownPoint.x = x;
-            diffToDownPoint.y = y; 
              
         }
         lastEvent.value = "dragMove";
